@@ -1,0 +1,1333 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ========== Цветовая система 2026 (light) ========== */
+:root {
+    --ios-font-text: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --ios-font-display: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --ios-radius-sm: 10px;
+    --ios-radius-md: 12px;
+    --ios-radius-lg: 14px;
+    --ios-radius-xl: 18px;
+
+    --color-primary: #B85C38;
+    --color-primary-variant: #9A4A2A;
+    --color-secondary: #6B8E6B;
+    --color-secondary-variant: #A8C5B5;
+    --color-background: #F5F2ED;
+    --color-surface: #EDE9E3;
+    --color-surface-elevated: #E5E0D8;
+    --color-error: #B53D3D;
+    --color-warning: #C4892E;
+    --color-success: #4A7C59;
+    --color-text-primary: #2C2A26;
+    --color-text-secondary: #5C5954;
+    --color-text-tertiary: #8A8681;
+    --color-outline: #C9C4BC;
+    --color-accent-pastel: #D4C4B0;
+    --color-primary-rgb: 184 92 56;
+
+    --ios-gray-1: var(--color-text-secondary);
+    --ios-gray-2: var(--color-text-tertiary);
+    --ios-gray-5: var(--color-outline);
+    --ios-gray-6: var(--color-surface-elevated);
+    --ios-blue: var(--color-primary);
+
+    --glass-blur: 40px;
+    --glass-saturate: 1.6;
+    --glass-bg: rgba(237, 233, 227, 0.92);
+    --glass-border: rgba(201, 196, 188, 0.5);
+    --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
+    --glass-shadow: 0 8px 32px rgba(44, 42, 38, 0.08), 0 2px 8px rgba(44, 42, 38, 0.04);
+    --glass-shadow-lg: 0 24px 64px rgba(44, 42, 38, 0.1), 0 8px 24px rgba(44, 42, 38, 0.06);
+}
+
+/* ========== Тёмная тема ========== */
+[data-theme="dark"] {
+    --color-primary: #E07D5A;
+    --color-primary-variant: #F09A7A;
+    --color-secondary: #7FA07F;
+    --color-secondary-variant: #5A7268;
+    --color-background: #1C1B18;
+    --color-surface: #282620;
+    --color-surface-elevated: #322F2A;
+    --color-error: #E07070;
+    --color-warning: #D4A24A;
+    --color-success: #6B9B7A;
+    --color-text-primary: #E8E6E1;
+    --color-text-secondary: #A8A6A0;
+    --color-text-tertiary: #7A7874;
+    --color-outline: #3D3B36;
+    --color-accent-pastel: #4A4238;
+    --color-primary-rgb: 224 125 90;
+
+    --ios-gray-1: var(--color-text-secondary);
+    --ios-gray-2: var(--color-text-tertiary);
+    --ios-gray-5: var(--color-outline);
+    --ios-gray-6: var(--color-surface-elevated);
+    --ios-blue: var(--color-primary);
+
+    --glass-bg: rgba(40, 38, 32, 0.92);
+    --glass-border: rgba(61, 59, 54, 0.6);
+    --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+    --glass-shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+body {
+    font-family: var(--ios-font-text);
+    font-size: 17px;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--tg-theme-bg-color, var(--color-background));
+    background-image:
+        radial-gradient(ellipse 120% 80% at 50% -20%, var(--color-surface-elevated), transparent 50%),
+        radial-gradient(ellipse 80% 50% at 80% 50%, var(--color-secondary-variant), transparent 45%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, var(--color-accent-pastel), transparent 45%);
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    min-height: 100vh;
+}
+
+/* Liquid Glass — основной контейнер */
+.container {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--glass-bg);
+    border-radius: 28px;
+    padding: 16px 16px 24px;
+    box-shadow: var(--glass-highlight), var(--glass-shadow-lg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+h2, h3 {
+    font-family: var(--ios-font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+h2 {
+    margin: 12px 0 18px 0;
+    font-size: 22px;
+}
+
+h3 {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+/* Навигация — Liquid Glass сегмент */
+.nav-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 18px;
+    padding: 5px;
+    background: var(--color-surface);
+    border-radius: 18px;
+    box-shadow: var(--glass-highlight), inset 0 0 0 1px var(--color-outline), 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--color-outline);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.nav-tab {
+    flex: 1;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: var(--ios-font-text);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--tg-theme-hint-color, var(--color-text-secondary));
+    transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nav-tab.active {
+    background: var(--color-surface-elevated);
+    color: var(--tg-theme-button-color, var(--color-primary));
+    box-shadow: var(--glass-highlight), 0 2px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+.theme-toggle {
+    flex: 0 0 auto;
+    width: 44px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 14px;
+    font-size: 18px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle:hover {
+    color: var(--color-primary);
+    background: rgb(var(--color-primary-rgb) / 0.08);
+}
+
+/* Главная — личная страница повара */
+.chef-select-section {
+    margin-bottom: 16px;
+}
+
+.chef-select-section label {
+    display: block;
+    margin-bottom: 6px;
+    font-family: var(--ios-font-text);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ios-gray-1);
+}
+
+.chef-select-section select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: var(--ios-radius-md);
+    border: 1px solid var(--ios-gray-5);
+    background: var(--ios-gray-6);
+    font-family: var(--ios-font-text);
+    font-size: 17px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.card-glass {
+    background: var(--glass-bg);
+    border-radius: 22px;
+    padding: 18px 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--glass-highlight), var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.chef-info .chef-name {
+    margin: 0 0 14px 0;
+    font-size: 20px;
+}
+
+.chef-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.chef-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--ios-gray-5);
+    font-family: var(--ios-font-text);
+    font-size: 16px;
+}
+
+.chef-summary-row:last-child {
+    border-bottom: none;
+}
+
+.chef-summary-label {
+    color: var(--ios-gray-1);
+}
+
+.chef-summary-value {
+    font-weight: 600;
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+}
+
+.chef-summary-row--total .chef-summary-value {
+    font-size: 18px;
+    color: var(--color-primary);
+}
+
+/* Календарь смен */
+.chef-calendar-section .calendar-title {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.calendar-nav-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: var(--ios-radius-md);
+    background: var(--ios-gray-6);
+    color: var(--ios-gray-1);
+    font-size: 20px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.2s, color 0.2s;
+}
+
+.calendar-nav-btn:hover {
+    background: var(--ios-gray-5);
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+}
+
+.calendar-month-year {
+    font-family: var(--ios-font-text);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--color-text-primary);
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+    margin-bottom: 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ios-radius-sm);
+    font-family: var(--ios-font-text);
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    min-height: 44px;
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid var(--color-outline);
+    background: var(--color-surface);
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.calendar-day--clickable {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.calendar-day--clickable:hover {
+    border-color: rgb(var(--color-primary-rgb) / 0.5);
+    box-shadow: inset 0 0 0 2px rgb(var(--color-primary-rgb) / 0.2);
+}
+
+.calendar-day--current.calendar-day--clickable:hover {
+    background: rgb(var(--color-primary-rgb) / 0.1);
+}
+
+.calendar-day--clickable:active {
+    box-shadow: inset 0 0 0 2px rgb(var(--color-primary-rgb) / 0.35);
+}
+
+.calendar-day-num {
+    display: block;
+    line-height: 1.2;
+}
+
+.calendar-day-hours {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    line-height: 1.3;
+    color: inherit;
+    min-height: 1.3em;
+    max-width: 100%;
+    text-align: center;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+@media (min-width: 481px) {
+    .container {
+        max-width: 560px;
+    }
+    .calendar-day {
+        padding: 8px;
+        min-height: 52px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chef-calendar-section.card-glass {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    .calendar-grid {
+        gap: 2px;
+    }
+    .calendar-weekdays {
+        gap: 2px;
+        font-size: 10px;
+    }
+    .calendar-day {
+        font-size: 11px;
+        min-height: 0;
+        padding: 2px;
+        border-radius: 6px;
+    }
+    .calendar-day-hours {
+        font-size: 9px;
+        margin-top: 0;
+        margin-bottom: 0;
+        line-height: 1.1;
+    }
+}
+
+.calendar-day--other-month {
+    opacity: 0.65;
+    background: var(--color-surface-elevated);
+}
+
+.calendar-day--current {
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+    font-weight: 500;
+}
+
+.calendar-day--has-shift {
+    font-weight: 700;
+    background: rgb(var(--color-primary-rgb) / 0.5) !important;
+    color: var(--color-primary-variant) !important;
+    border-color: rgb(var(--color-primary-rgb) / 0.7) !important;
+}
+
+.calendar-day--has-shift .calendar-day-hours {
+    color: inherit;
+}
+
+/* Цвета по зонам (Холодный, Горячий, Кондитерский, Мойка и др.) */
+.calendar-day--zone-1 {
+    background: rgba(52, 199, 246, 0.65) !important;
+    color: #044a62 !important;
+    border-color: rgba(52, 199, 246, 0.8) !important;
+}
+.calendar-day--zone-2 {
+    background: rgba(255, 149, 0, 0.65) !important;
+    color: #7a2e00 !important;
+    border-color: rgba(255, 149, 0, 0.8) !important;
+}
+.calendar-day--zone-3 {
+    background: rgba(191, 90, 242, 0.65) !important;
+    color: #2d0f4a !important;
+    border-color: rgba(191, 90, 242, 0.8) !important;
+}
+.calendar-day--zone-4 {
+    background: rgba(48, 209, 88, 0.65) !important;
+    color: #0d3d18 !important;
+    border-color: rgba(48, 209, 88, 0.8) !important;
+}
+.calendar-day--zone-5 {
+    background: rgba(255, 59, 48, 0.6) !important;
+    color: #7a1010 !important;
+    border-color: rgba(255, 59, 48, 0.8) !important;
+}
+.calendar-day--zone-6 {
+    background: rgba(90, 200, 250, 0.65) !important;
+    color: #044a62 !important;
+    border-color: rgba(90, 200, 250, 0.8) !important;
+}
+
+/* Модальное окно: смены за день */
+.day-modal-title {
+    margin-bottom: 12px;
+}
+
+.day-modal-content {
+    margin-top: 8px;
+}
+
+.day-modal-loading,
+.day-modal-empty {
+    color: var(--ios-gray-1);
+    font-size: 15px;
+}
+
+.day-shift-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.day-shift-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ios-gray-5);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+    gap: 4px 12px;
+    font-size: 15px;
+}
+
+.day-shift-item:last-child {
+    border-bottom: none;
+}
+
+.day-shift-employee {
+    font-weight: 600;
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+}
+
+.day-shift-zone {
+    font-size: 13px;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.day-shift-time {
+    grid-column: 1;
+    font-size: 13px;
+    color: var(--ios-gray-1);
+}
+
+.day-shift-hours {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    font-weight: 600;
+    color: var(--ios-gray-1);
+}
+
+.day-shift-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.btn-day-edit,
+.btn-day-delete {
+    padding: 6px 12px;
+    border-radius: var(--ios-radius-sm);
+    font-size: 13px;
+    font-family: var(--ios-font-text);
+    cursor: pointer;
+    border: 1px solid var(--ios-gray-5);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+}
+
+.btn-day-edit:hover,
+.btn-day-delete:hover {
+    background: var(--ios-gray-6);
+}
+
+.btn-day-delete {
+    border-color: rgba(255, 59, 48, 0.4);
+    color: #c41e1e;
+}
+
+.btn-day-delete:hover {
+    background: rgba(255, 59, 48, 0.1);
+}
+
+[data-theme="dark"] .btn-day-edit,
+[data-theme="dark"] .btn-day-delete {
+    background: var(--color-surface-elevated);
+    color: var(--color-text-primary);
+    border-color: var(--color-outline);
+}
+
+[data-theme="dark"] .btn-day-delete {
+    border-color: rgba(224, 112, 112, 0.8);
+    color: #ffc8c4;
+}
+
+.day-modal-edit-wrap {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ios-gray-5);
+}
+
+.day-modal-edit-wrap label {
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: var(--ios-gray-1);
+}
+
+.day-modal-edit-wrap select,
+.day-modal-edit-wrap input[type="time"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--ios-radius-sm);
+    border: 1px solid var(--ios-gray-5);
+    font-size: 14px;
+    font-family: var(--ios-font-text);
+    background: var(--tg-theme-bg-color, var(--color-surface));
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+    box-sizing: border-box;
+}
+
+.day-modal-edit-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+}
+
+.day-modal-edit-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.day-modal-edit-actions .btn-primary {
+    flex: 1;
+}
+
+.day-modal-actions {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ios-gray-5);
+}
+
+.day-modal-actions .btn-add-shifts {
+    width: 100%;
+}
+
+.day-modal-add-form-wrap {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ios-gray-5);
+}
+
+.day-modal-add-form-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+}
+
+.day-add-shift-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.day-add-shift-row select,
+.day-add-shift-row input[type="time"] {
+    padding: 10px 12px;
+    border-radius: var(--ios-radius-sm);
+    border: 1px solid var(--ios-gray-5);
+    font-size: 14px;
+    font-family: var(--ios-font-text);
+    background: var(--tg-theme-bg-color, var(--color-surface));
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+}
+
+.day-add-remove {
+    min-width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 59, 48, 0.15);
+    color: #c41e1e;
+    font-size: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.day-add-remove:hover {
+    background: rgba(255, 59, 48, 0.25);
+}
+
+.day-modal-add-form-wrap .btn-ios-secondary {
+    margin-top: 8px;
+    margin-right: 8px;
+    padding: 10px 16px;
+    border-radius: var(--ios-radius-md);
+    border: 1px solid var(--ios-gray-5);
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.day-modal-add-form-wrap .btn-primary {
+    margin-top: 12px;
+    width: 100%;
+}
+
+@media (max-width: 400px) {
+    .day-add-shift-row {
+        grid-template-columns: 1fr 1fr auto;
+        gap: 6px;
+    }
+    .day-add-shift-row .day-add-employee { grid-column: 1; grid-row: 1; }
+    .day-add-shift-row .day-add-zone { grid-column: 2; grid-row: 1; }
+    .day-add-shift-row .day-add-start { grid-column: 1; grid-row: 2; }
+    .day-add-shift-row .day-add-end { grid-column: 2; grid-row: 2; }
+    .day-add-shift-row .day-add-remove { grid-column: 3; grid-row: 1 / 3; }
+}
+
+.calendar-no-shifts-hint {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: rgb(var(--color-primary-rgb) / 0.1);
+    border-radius: var(--ios-radius-md);
+    font-size: 14px;
+    color: var(--ios-gray-1);
+}
+
+.calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ios-gray-5);
+}
+
+.calendar-legend-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: var(--ios-radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.calendar-legend-item--zone-1 { background: rgba(52, 199, 246, 0.35); color: #0a7ea4; }
+.calendar-legend-item--zone-2 { background: rgba(255, 149, 0, 0.35); color: #c93400; }
+.calendar-legend-item--zone-3 { background: rgba(191, 90, 242, 0.35); color: #6e2b9e; }
+.calendar-legend-item--zone-4 { background: rgba(48, 209, 88, 0.35); color: #1e7b34; }
+.calendar-legend-item--zone-5 { background: rgba(255, 59, 48, 0.3); color: #c41e1e; }
+.calendar-legend-item--zone-6 { background: rgba(90, 200, 250, 0.35); color: #0a7ea4; }
+
+/* Сегодня — только обводка; цвет фона/текста у дней со сменой не перебиваем */
+.calendar-day--today {
+    box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+.calendar-day--today:not(.calendar-day--has-shift) {
+    color: var(--color-primary);
+}
+
+/* ========== Календарь: тёмная тема (читаемость) ========== */
+[data-theme="dark"] .calendar-day {
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    border-color: var(--color-outline);
+}
+
+[data-theme="dark"] .calendar-day--other-month {
+    background: var(--color-background);
+    opacity: 0.85;
+    color: var(--color-text-tertiary);
+}
+
+[data-theme="dark"] .calendar-day--current {
+    color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .calendar-day--today {
+    box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+[data-theme="dark"] .calendar-day--today:not(.calendar-day--has-shift) {
+    color: var(--color-primary);
+}
+
+[data-theme="dark"] .calendar-month-year {
+    color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .calendar-weekdays {
+    color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .calendar-legend {
+    border-top-color: var(--color-outline);
+}
+
+[data-theme="dark"] .calendar-legend-item {
+    font-weight: 600;
+}
+[data-theme="dark"] .calendar-legend-item--zone-1 { background: rgba(52, 199, 246, 0.5); color: #b8e8f8; }
+[data-theme="dark"] .calendar-legend-item--zone-2 { background: rgba(255, 149, 0, 0.5); color: #ffe0b8; }
+[data-theme="dark"] .calendar-legend-item--zone-3 { background: rgba(191, 90, 242, 0.5); color: #e8c8f8; }
+[data-theme="dark"] .calendar-legend-item--zone-4 { background: rgba(48, 209, 88, 0.5); color: #b8f0c8; }
+[data-theme="dark"] .calendar-legend-item--zone-5 { background: rgba(255, 59, 48, 0.45); color: #ffc8c4; }
+[data-theme="dark"] .calendar-legend-item--zone-6 { background: rgba(90, 200, 250, 0.5); color: #b8e8f8; }
+
+/* Ячейки зон в календаре — тёмная тема: светлый текст */
+[data-theme="dark"] .calendar-day--zone-1 { background: rgba(52, 199, 246, 0.45) !important; color: #b8e8f8 !important; border-color: rgba(52, 199, 246, 0.7) !important; }
+[data-theme="dark"] .calendar-day--zone-2 { background: rgba(255, 149, 0, 0.45) !important; color: #ffe0b8 !important; border-color: rgba(255, 149, 0, 0.7) !important; }
+[data-theme="dark"] .calendar-day--zone-3 { background: rgba(191, 90, 242, 0.45) !important; color: #e8c8f8 !important; border-color: rgba(191, 90, 242, 0.7) !important; }
+[data-theme="dark"] .calendar-day--zone-4 { background: rgba(48, 209, 88, 0.45) !important; color: #b8f0c8 !important; border-color: rgba(48, 209, 88, 0.7) !important; }
+[data-theme="dark"] .calendar-day--zone-5 { background: rgba(255, 59, 48, 0.4) !important; color: #ffc8c4 !important; border-color: rgba(255, 59, 48, 0.7) !important; }
+[data-theme="dark"] .calendar-day--zone-6 { background: rgba(90, 200, 250, 0.45) !important; color: #b8e8f8 !important; border-color: rgba(90, 200, 250, 0.7) !important; }
+
+/* Вкладки */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Кнопки */
+.btn-primary {
+    font-family: var(--ios-font-text);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, transparent 50%), linear-gradient(135deg, var(--tg-theme-button-color, var(--color-primary)), var(--color-primary-variant));
+    color: var(--tg-theme-button-text-color, #fff);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 14px 24px;
+    border-radius: var(--ios-radius-lg);
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 600;
+    width: 100%;
+    margin: 10px 0;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 10px 24px rgb(var(--color-primary-rgb) / 0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+}
+
+.btn-primary:hover {
+    opacity: 0.95;
+}
+
+.btn-primary:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 6px 14px rgb(var(--color-primary-rgb) / 0.3);
+}
+
+.btn-danger {
+    font-family: var(--ios-font-text);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%), linear-gradient(135deg, #ff3b30, #ff453a);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 14px 24px;
+    border-radius: var(--ios-radius-lg);
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 600;
+    width: 100%;
+    margin: 10px 0;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 0 10px 24px rgba(255, 59, 48, 0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s ease;
+}
+
+.btn-danger:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 6px 14px rgba(255, 59, 48, 0.3);
+}
+
+/* Фильтры — Liquid Glass */
+.filter-section {
+    background: var(--glass-bg);
+    padding: 16px 14px;
+    border-radius: 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--glass-highlight), var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.filter-section label {
+    display: block;
+    margin: 12px 0 6px 0;
+    font-family: var(--ios-font-text);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ios-gray-1);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.filter-section select,
+.filter-section input[type="date"],
+.filter-section input[type="time"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: var(--ios-radius-md);
+    border: 1px solid var(--ios-gray-5);
+    background: var(--ios-gray-6);
+    font-family: var(--ios-font-text);
+    font-size: 17px;
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+    margin-bottom: 12px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.filter-section input[type="date"],
+.filter-section input[type="time"] {
+    min-height: 44px;
+}
+
+.filter-section input[type="date"]::-webkit-calendar-picker-indicator,
+.filter-section input[type="time"]::-webkit-calendar-picker-indicator {
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.filter-section select:focus,
+.filter-section input[type="date"]:focus,
+.filter-section input[type="time"]:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgb(var(--color-primary-rgb) / 0.2);
+}
+
+/* Кнопки действий в фильтрах (Загрузить, Рассчитать) — iOS 26 */
+.btn-ios-action {
+    width: 100%;
+    margin-top: 14px;
+    padding: 14px 20px;
+    font-family: var(--ios-font-text);
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%), var(--color-primary);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--ios-radius-lg);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 0 4px 12px rgb(var(--color-primary-rgb) / 0.25);
+    transition: transform 0.12s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-ios-action:hover {
+    opacity: 0.92;
+}
+
+.btn-ios-action:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+/* Список графика */
+.schedule-list {
+    margin-top: 20px;
+}
+
+.schedule-item {
+    background: var(--glass-bg);
+    padding: 14px 14px 12px;
+    border-radius: 22px;
+    margin-bottom: 12px;
+    box-shadow: var(--glass-highlight), var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.schedule-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.schedule-item-title {
+    font-family: var(--ios-font-display);
+    font-weight: 600;
+    font-size: 17px;
+}
+
+.schedule-item-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.schedule-item-zone {
+    background: rgb(var(--color-primary-rgb) / 0.85);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 0 2px 6px rgb(var(--color-primary-rgb) / 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.schedule-item-delete {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 59, 48, 0.2);
+    color: #ff3b30;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.schedule-item-delete:hover {
+    background: rgba(255, 59, 48, 0.35);
+}
+
+.schedule-item-delete:active {
+    transform: scale(0.92);
+}
+
+.schedule-item-details {
+    font-family: var(--ios-font-text);
+    color: var(--ios-gray-1);
+    font-size: 15px;
+}
+
+/* Результат расчета зарплаты — Liquid Glass */
+.salary-result {
+    background: var(--glass-bg);
+    padding: 18px 16px;
+    border-radius: 22px;
+    margin-top: 18px;
+    box-shadow: var(--glass-highlight), var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.salary-result h3 {
+    font-family: var(--ios-font-display);
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.salary-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--ios-gray-5);
+    font-family: var(--ios-font-text);
+    font-size: 16px;
+}
+
+.salary-info:last-child {
+    border-bottom: none;
+    font-weight: 600;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.salary-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.salary-month-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.salary-month-label {
+    font-family: var(--ios-font-text);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.salary-nav-btn {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.salary-month-input-label {
+    font-size: 13px;
+    color: var(--ios-gray-1);
+}
+
+.salary-filter input[type="month"] {
+    margin-top: 2px;
+    padding: 10px 12px;
+    border-radius: var(--ios-radius-sm);
+    border: 1px solid var(--ios-gray-5);
+    font-size: 14px;
+    font-family: var(--ios-font-text);
+    background: var(--tg-theme-bg-color, var(--color-surface));
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+}
+
+/* Список рецептов */
+.recipes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.recipe-card {
+    background: var(--glass-bg);
+    border-radius: 22px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--glass-highlight), var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.recipe-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glass-highlight), 0 16px 40px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.recipe-card-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    background: rgba(220, 224, 232, 0.6);
+}
+
+.recipe-card-name {
+    padding: 12px;
+    font-family: var(--ios-font-text);
+    font-weight: 600;
+    font-size: 15px;
+    text-align: center;
+}
+
+/* Модальные окна — Liquid Glass */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    overflow-y: auto;
+}
+
+.modal-content {
+    background: var(--glass-bg);
+    margin: 32px auto 20px;
+    padding: 18px 16px 22px;
+    border-radius: 28px;
+    width: 94%;
+    max-width: 520px;
+    position: relative;
+    box-shadow: var(--glass-highlight), var(--glass-shadow-lg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    animation: ios-sheet-in 0.22s ease-out;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--tg-theme-hint-color, #999);
+}
+
+.close:hover {
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+}
+
+.modal-content form {
+    margin-top: 20px;
+}
+
+.modal-content label:not(.ios-file-label) {
+    display: block;
+    margin: 14px 0 6px 0;
+    font-family: var(--ios-font-text);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ios-gray-1);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="date"],
+.modal-content input[type="time"],
+.modal-content textarea,
+.modal-content select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: var(--ios-radius-md);
+    border: 1px solid var(--ios-gray-5);
+    background: var(--ios-gray-6);
+    font-family: var(--ios-font-text);
+    font-size: 17px;
+    color: var(--tg-theme-text-color, var(--color-text-primary));
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.modal-content input[type="date"],
+.modal-content input[type="time"] {
+    min-height: 44px;
+}
+
+.modal-content input[type="date"]::-webkit-calendar-picker-indicator,
+.modal-content input[type="time"]::-webkit-calendar-picker-indicator {
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.modal-content textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Выбор файла — iOS 26 */
+.ios-file-wrap {
+    margin: 10px 0 0 0;
+}
+
+.ios-file-input {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.ios-file-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    font-family: var(--ios-font-text);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--color-primary);
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px dashed rgba(255, 255, 255, 0.6);
+    border-radius: var(--ios-radius-lg);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: var(--glass-highlight), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+}
+
+.ios-file-label:hover {
+    background: var(--ios-gray-5);
+    border-color: var(--ios-gray-2);
+}
+
+.ios-file-label:active {
+    transform: scale(0.98);
+}
+
+.ios-file-icon {
+    font-size: 22px;
+}
+
+.ios-file-text {
+    letter-spacing: -0.01em;
+}
+
+#recipe-photo-preview {
+    margin-top: 12px;
+}
+
+#recipe-photo-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: var(--ios-radius-md);
+    margin-top: 8px;
+}
+
+/* Просмотр рецепта */
+.recipe-view {
+    padding: 10px 0;
+}
+
+.recipe-view-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: var(--ios-radius-lg);
+    margin-bottom: 20px;
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+}
+
+.recipe-view-section {
+    margin-bottom: 20px;
+}
+
+.recipe-view-section h4 {
+    margin-bottom: 10px;
+    color: var(--tg-theme-button-color, #3390ec);
+}
+
+.recipe-view-section p,
+.recipe-view-section ul {
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.recipe-view-section ul {
+    padding-left: 20px;
+}
+
+@keyframes ios-sheet-in {
+    from {
+        transform: translateY(24px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кухня - Управление</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Навигация -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="home">Главная</button>
+            <button class="nav-tab" data-tab="salary">Зарплата</button>
+            <button class="nav-tab" data-tab="recipes">Рецепты</button>
+            <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Светлая/тёмная тема" aria-label="Переключить тему">◐</button>
+        </nav>
+
+        <!-- Вкладка Главная — личная страница повара -->
+        <div id="home-tab" class="tab-content active">
+            <div class="chef-select-section">
+                <label>Выберите себя</label>
+                <select id="chef-select" onchange="onChefSelectChange()">
+                    <option value="">—</option>
+                </select>
+            </div>
+            <div id="chef-home-content" class="chef-home-content">
+                <section class="chef-info card-glass">
+                    <h2 id="chef-name" class="chef-name">—</h2>
+                    <div class="chef-summary">
+                        <div class="chef-summary-row">
+                            <span class="chef-summary-label">Ставка за час</span>
+                            <span id="chef-hourly-rate" class="chef-summary-value">—</span>
+                        </div>
+                        <div class="chef-summary-row">
+                            <span class="chef-summary-label">Часов за месяц</span>
+                            <span id="chef-total-hours" class="chef-summary-value">—</span>
+                        </div>
+                        <div class="chef-summary-row chef-summary-row--total">
+                            <span class="chef-summary-label">Зарплата за месяц</span>
+                            <span id="chef-salary" class="chef-summary-value">—</span>
+                        </div>
+                    </div>
+                </section>
+                <section class="chef-calendar-section card-glass">
+                    <h3 id="calendar-title" class="calendar-title">Календарь смен</h3>
+                    <div class="calendar-nav">
+                        <button type="button" class="calendar-nav-btn" id="calendar-prev" onclick="calendarPrevMonth()" aria-label="Предыдущий месяц">‹</button>
+                        <span id="calendar-month-year" class="calendar-month-year"></span>
+                        <button type="button" class="calendar-nav-btn" id="calendar-next" onclick="calendarNextMonth()" aria-label="Следующий месяц">›</button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+                    </div>
+                    <div id="calendar-grid" class="calendar-grid"></div>
+                    <p id="calendar-no-shifts-hint" class="calendar-no-shifts-hint" style="display: none;">Нет смен в этом месяце. Нажмите на дату в календаре, чтобы добавить смены.</p>
+                    <div id="calendar-legend" class="calendar-legend"></div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Вкладка Зарплата -->
+        <div id="salary-tab" class="tab-content">
+            <h2>Расчет зарплаты</h2>
+            
+            <div class="filter-section salary-filter">
+                <label>Сотрудник:</label>
+                <select id="employee-select">
+                    <option value="">Выберите сотрудника</option>
+                </select>
+
+                <div class="salary-month-controls">
+                    <button type="button" class="calendar-nav-btn salary-nav-btn" onclick="salaryPrevMonth()" aria-label="Предыдущий месяц">‹</button>
+                    <span id="salary-month-label" class="salary-month-label"></span>
+                    <button type="button" class="calendar-nav-btn salary-nav-btn" onclick="salaryNextMonth()" aria-label="Следующий месяц">›</button>
+                </div>
+
+                <label class="salary-month-input-label">Быстрый выбор месяца:</label>
+                <input type="month" id="salary-month-input" />
+            </div>
+
+            <div id="salary-result" class="salary-result"></div>
+        </div>
+
+        <!-- Вкладка Технологические карты -->
+        <div id="recipes-tab" class="tab-content">
+            <h2>Технологические карты</h2>
+            
+            <button class="btn-primary" onclick="showAddRecipeForm()">Добавить карту</button>
+            
+            <div id="recipes-list" class="recipes-list"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления смены -->
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('schedule-modal')">&times;</span>
+            <h3>Добавить смену</h3>
+            <form id="schedule-form">
+                <label>Сотрудник:</label>
+                <select id="schedule-employee" required></select>
+                
+                <label>Зона кухни:</label>
+                <select id="schedule-zone" required></select>
+                
+                <label>Дата:</label>
+                <input type="date" id="schedule-date" required />
+                
+                <label>Время начала:</label>
+                <input type="time" id="schedule-start-time" required />
+                
+                <label>Время окончания:</label>
+                <input type="time" id="schedule-end-time" required />
+                
+                <button type="submit" class="btn-primary">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно для технологической карты -->
+    <div id="recipe-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('recipe-modal')">&times;</span>
+            <h3 id="recipe-modal-title">Добавить технологическую карту</h3>
+            <form id="recipe-form">
+                <input type="hidden" id="recipe-id" />
+                
+                <label>Название блюда:</label>
+                <input type="text" id="recipe-name" required />
+                
+                <label>Описание:</label>
+                <textarea id="recipe-description"></textarea>
+                
+                <label>Ингредиенты:</label>
+                <textarea id="recipe-ingredients" required placeholder="Список ингредиентов..."></textarea>
+                
+                <label>Шаги приготовления:</label>
+                <textarea id="recipe-steps" required placeholder="Пошаговое описание..."></textarea>
+                
+                <label>Фото блюда</label>
+                <div class="ios-file-wrap">
+                    <input type="file" id="recipe-photo" accept="image/*" class="ios-file-input" />
+                    <label for="recipe-photo" class="ios-file-label">
+                        <span class="ios-file-icon">📷</span>
+                        <span class="ios-file-text">Выбрать фото</span>
+                    </label>
+                </div>
+                <div id="recipe-photo-preview"></div>
+                
+                <button type="submit" class="btn-primary">Сохранить</button>
+                <button type="button" class="btn-danger" id="recipe-delete-btn" onclick="deleteRecipe()" style="display:none;">Удалить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно просмотра рецепта -->
+    <div id="recipe-view-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('recipe-view-modal')">&times;</span>
+            <div id="recipe-view-content"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: смены за день -->
+    <div id="day-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('day-modal')">&times;</span>
+            <h3 id="day-modal-title" class="day-modal-title">Смены за день</h3>
+            <div id="day-modal-content" class="day-modal-content"></div>
+            <div id="day-modal-edit-wrap" class="day-modal-edit-wrap" style="display: none;">
+                <h4 class="day-modal-edit-title">Редактировать смену</h4>
+                <input type="hidden" id="day-edit-id" />
+                <label>Сотрудник:</label>
+                <select id="day-edit-employee"></select>
+                <label>Зона:</label>
+                <select id="day-edit-zone"></select>
+                <label>Время начала:</label>
+                <input type="time" id="day-edit-start" />
+                <label>Время окончания:</label>
+                <input type="time" id="day-edit-end" />
+                <div class="day-modal-edit-actions">
+                    <button type="button" class="btn-primary" id="day-edit-save-btn">Сохранить</button>
+                    <button type="button" class="btn-ios-secondary" id="day-edit-cancel-btn">Отмена</button>
+                </div>
+            </div>
+            <div class="day-modal-actions">
+                <button type="button" class="btn-primary btn-add-shifts" id="day-modal-add-shifts-btn">Добавить смены</button>
+            </div>
+            <div id="day-modal-add-form-wrap" class="day-modal-add-form-wrap" style="display: none;">
+                <h4 class="day-modal-add-form-title">Новые смены</h4>
+                <div id="day-modal-add-form-rows"></div>
+                <button type="button" class="btn-ios-secondary" id="day-modal-add-row-btn">Добавить ещё</button>
+                <button type="button" class="btn-primary" id="day-modal-save-shifts-btn">Сохранить смены</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
