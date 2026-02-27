@@ -82,7 +82,7 @@ npm start
 ## Структура проекта
 
 ```
-kitchen-telegram-app/
+kitchen-tg-app/
 ├── public/              # Frontend (HTML, CSS, JS)
 │   ├── index.html
 │   ├── styles.css

@@ -3,7 +3,7 @@
 ## 1. Установка зависимостей
 
 ```bash
-cd kitchen-telegram-app
+cd kitchen-tg-app
 npm install
 ```
 

@@ -4,7 +4,7 @@
 
 1. Зайдите на [github.com](https://github.com) и войдите в аккаунт.
 2. Нажмите **«+»** → **«New repository»**.
-3. Укажите имя репозитория (например, `kitchen-telegram-app`).
+3. Укажите имя репозитория (например, `kitchen-tg-app`).
 4. Выберите **Public**, галочку **«Add a README»** можно не ставить.
 5. Нажмите **«Create repository»**.
 
@@ -13,7 +13,7 @@
 В терминале из папки проекта выполните:
 
 ```bash
-cd /Users/dambas/Projects/kitchen-telegram-app
+cd /Users/dambas/Projects/kitchen-tg-app
 
 # Инициализация (если ещё не сделано)
 git init
@@ -25,7 +25,7 @@ git add .
 git commit -m "Initial commit: Kitchen Telegram Mini App"
 
 # Подключить ваш репозиторий (подставьте свой логин и имя репо)
-git remote add origin https://github.com/ВАШ_ЛОГИН/kitchen-telegram-app.git
+git remote add origin https://github.com/ВАШ_ЛОГИН/kitchen-tg-app.git
 
 # Отправить код в ветку main
 git branch -M main
@@ -43,7 +43,7 @@ git push -u origin main
 
 - **HTTPS:** при первом `git push` браузер или Git запросит логин/пароль. Вместо пароля используйте [Personal Access Token](https://github.com/settings/tokens) (классический токен с правом `repo`).
 - **SSH:** если настроен ключ, замените `origin` на SSH-URL:  
-  `git@github.com:ВАШ_ЛОГИН/kitchen-telegram-app.git`
+  `git@github.com:ВАШ_ЛОГИН/kitchen-tg-app.git`
 
 ## Что не попадёт в репозиторий (уже в .gitignore)
 
@@ -54,4 +54,4 @@ git push -u origin main
 - `.DS_Store`
 
 После push репозиторий будет доступен по адресу:  
-`https://github.com/ВАШ_ЛОГИН/kitchen-telegram-app`
+`https://github.com/ВАШ_ЛОГИН/kitchen-tg-app`
