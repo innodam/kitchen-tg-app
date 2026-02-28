@@ -8,7 +8,23 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
+    <!-- Экран регистрации при первом входе из Telegram -->
+    <div id="registration-screen" class="registration-screen" style="display: none;">
+        <div class="registration-card card-glass">
+            <h2>Регистрация</h2>
+            <p class="registration-hint">Укажите ваши данные для доступа к приложению.</p>
+            <form id="registration-form">
+                <label for="reg-name">Имя</label>
+                <input type="text" id="reg-name" required placeholder="Как к вам обращаться?" autocomplete="name" />
+                <label for="reg-hourly-rate">Ставка за час (₽)</label>
+                <input type="number" id="reg-hourly-rate" required min="0" step="1" placeholder="0" />
+                <button type="submit" class="btn-primary" id="reg-submit">Войти в приложение</button>
+            </form>
+            <p id="registration-error" class="registration-error" style="display: none;"></p>
+        </div>
+    </div>
+
+    <div class="container" id="main-container">
         <!-- Навигация -->
         <nav class="nav-tabs">
             <button class="nav-tab active" data-tab="home">Главная</button>

@@ -66,13 +66,77 @@ let salaryViewMonth = new Date().getMonth();
 
 const STORAGE_THEME = 'kitchen_theme';
 
+/** Получить значение из themeParams (snake_case в API, иногда camelCase в SDK). */
+function getThemeParam(params, key) {
+    if (!params) return null;
+    if (params[key] != null) return params[key];
+    const camel = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+    return params[camel] != null ? params[camel] : null;
+}
+
+/** Применить тему из настроек Telegram (themeParams + colorScheme). Вызывать при загрузке и по theme_changed. */
+function applyTelegramTheme() {
+    const webApp = window.Telegram?.WebApp;
+    const params = webApp?.themeParams;
+    const colorScheme = webApp?.colorScheme; // "light" | "dark"
+    if (!params || typeof params !== 'object') return false;
+
+    const root = document.documentElement;
+    if (colorScheme) {
+        root.setAttribute('data-theme', colorScheme);
+    }
+    // Маппинг ThemeParams API → наши CSS-переменные (см. https://core.telegram.org/bots/webapps#themeparams)
+    const map = {
+        'bg_color': '--color-background',
+        'secondary_bg_color': '--color-surface',
+        'section_bg_color': '--color-surface-elevated',
+        'text_color': '--color-text-primary',
+        'hint_color': '--color-text-secondary',
+        'subtitle_text_color': '--color-text-tertiary',
+        'link_color': '--color-primary',
+        'button_color': '--color-primary',
+        'button_text_color': '--tg-theme-button-text-color',
+        'accent_text_color': '--color-primary',
+        'section_header_text_color': '--color-text-primary',
+        'header_bg_color': '--color-surface-elevated',
+        'destructive_text_color': '--color-error',
+        'section_separator_color': '--color-outline'
+    };
+    for (const [key, cssVar] of Object.entries(map)) {
+        const value = getThemeParam(params, key);
+        if (value) root.style.setProperty(cssVar, value);
+    }
+    // Стеклянные поверхности — из secondary/section фона Telegram
+    const glassBg = getThemeParam(params, 'section_bg_color') || getThemeParam(params, 'secondary_bg_color') || getThemeParam(params, 'bg_color');
+    if (glassBg) {
+        root.style.setProperty('--glass-bg', glassBg + 'ee');
+        root.style.setProperty('--glass-border', glassBg + '99');
+    }
+    // Подогнать фон и шапку Mini App под тему Telegram
+    const bg = getThemeParam(params, 'bg_color');
+    if (bg && webApp.setHeaderColor) webApp.setHeaderColor(bg);
+    if (bg && webApp.setBackgroundColor) webApp.setBackgroundColor(bg);
+    return true;
+}
+
 function initTheme() {
+    const useTelegram = applyTelegramTheme();
+    if (useTelegram) {
+        if (window.Telegram?.WebApp?.onEvent) {
+            window.Telegram.WebApp.onEvent('themeChanged', applyTelegramTheme);
+        }
+        const themeToggle = document.querySelector('.theme-toggle');
+        if (themeToggle) themeToggle.style.display = 'none';
+        return;
+    }
     const stored = localStorage.getItem(STORAGE_THEME);
     const dark = stored === 'dark' || (!stored && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
 }
 
 function toggleTheme() {
+    const useTelegram = window.Telegram?.WebApp?.themeParams;
+    if (useTelegram) return;
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const next = isDark ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
@@ -84,7 +148,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initNavigation();
     initDayModalAddShifts();
-    loadInitialData();
+    initRegistrationForm();
+
+    const initData = window.Telegram?.WebApp?.initData;
+    if (initData) {
+        checkAuthAndMaybeShowRegistration(initData);
+    } else {
+        loadInitialData();
+    }
+
     const salaryEmpSelect = document.getElementById('employee-select');
     if (salaryEmpSelect) {
         salaryEmpSelect.addEventListener('change', () => calculateSalary());
@@ -94,6 +166,95 @@ document.addEventListener('DOMContentLoaded', () => {
         salaryMonthInput.addEventListener('change', onSalaryMonthInputChange);
     }
 });
+
+/** Проверка: зарегистрирован ли пользователь Telegram. Если нет — показываем экран регистрации. */
+async function checkAuthAndMaybeShowRegistration(initData) {
+    const regScreen = document.getElementById('registration-screen');
+    const mainContainer = document.getElementById('main-container');
+    try {
+        const res = await fetch(`${API_BASE}/api/auth/me`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ initData })
+        });
+        const data = await res.json();
+        if (data.registered && data.employee) {
+            currentEmployeeId = data.employee.id;
+            try {
+                localStorage.setItem(STORAGE_CHEF_ID, String(data.employee.id));
+            } catch (e) {}
+            loadInitialData();
+        } else {
+            regScreen.style.display = 'flex';
+            if (mainContainer) mainContainer.style.display = 'none';
+        }
+    } catch (e) {
+        console.error('auth/me', e);
+        loadInitialData();
+    }
+}
+
+function initRegistrationForm() {
+    const form = document.getElementById('registration-form');
+    const regScreen = document.getElementById('registration-screen');
+    const mainContainer = document.getElementById('main-container');
+    const errEl = document.getElementById('registration-error');
+    const submitBtn = document.getElementById('reg-submit');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const initData = window.Telegram?.WebApp?.initData;
+        if (!initData) {
+            if (errEl) {
+                errEl.textContent = 'Откройте приложение из Telegram.';
+                errEl.style.display = 'block';
+            }
+            return;
+        }
+        const name = document.getElementById('reg-name')?.value?.trim();
+        const hourlyRate = document.getElementById('reg-hourly-rate')?.value;
+        if (!name) {
+            if (errEl) {
+                errEl.textContent = 'Введите имя.';
+                errEl.style.display = 'block';
+            }
+            return;
+        }
+        if (errEl) errEl.style.display = 'none';
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    initData,
+                    name,
+                    hourly_rate: parseFloat(hourlyRate) || 0
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'Ошибка регистрации');
+            }
+            currentEmployeeId = data.id;
+            try {
+                localStorage.setItem(STORAGE_CHEF_ID, String(data.id));
+            } catch (e) {}
+            regScreen.style.display = 'none';
+            if (mainContainer) mainContainer.style.display = '';
+            loadInitialData();
+        } catch (err) {
+            if (errEl) {
+                errEl.textContent = err.message || 'Ошибка. Попробуйте ещё раз.';
+                errEl.style.display = 'block';
+            }
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    });
+}
 
 // Навигация по вкладкам
 function initNavigation() {

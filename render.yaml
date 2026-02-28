@@ -1,0 +1,16 @@
+# Render Blueprint — команда запуска для kitchen-tg-app
+# Если сервис создан вручную: в Dashboard → Web Service → Start Command укажите: npm start
+
+services:
+  - type: web
+    name: kitchen-tg-app
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: DATABASE_PATH
+        value: ./data/kitchen.db
+      - key: UPLOAD_DIR
+        value: ./uploads

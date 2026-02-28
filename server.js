@@ -5,7 +5,41 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const { initDatabase, getDatabase } = require('./database');
+
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+
+/** Проверка подписи Telegram Web App initData (см. https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app) */
+function validateTelegramInitData(initData) {
+  if (!initData || typeof initData !== 'string') return null;
+  if (!BOT_TOKEN) return parseInitDataUser(initData); // без токена только парсим (для разработки)
+  try {
+    const secret = crypto.createHmac('sha256', 'WebAppData').update(BOT_TOKEN).digest();
+    const params = new URLSearchParams(initData);
+    const hash = params.get('hash');
+    params.delete('hash');
+    const sorted = [...params.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    const dataCheckString = sorted.map(([k, v]) => `${k}=${v}`).join('\n');
+    const computed = crypto.createHmac('sha256', secret).update(dataCheckString).digest('hex');
+    if (computed !== hash) return null;
+    return parseInitDataUser(initData);
+  } catch (e) {
+    return null;
+  }
+}
+
+function parseInitDataUser(initData) {
+  try {
+    const params = new URLSearchParams(initData);
+    const userStr = params.get('user');
+    if (!userStr) return null;
+    const user = JSON.parse(userStr);
+    return user.id ? String(user.id) : null;
+  } catch (e) {
+    return null;
+  }
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -49,6 +83,63 @@ initDatabase().then(() => {
   console.log('База данных инициализирована');
 }).catch(err => {
   console.error('Ошибка инициализации БД:', err);
+});
+
+// ========== API авторизации (первый вход / регистрация) ==========
+app.post('/api/auth/me', (req, res) => {
+  const initData = req.body?.initData || req.query?.initData || '';
+  const telegramId = validateTelegramInitData(initData);
+  if (!telegramId) {
+    return res.json({ registered: false });
+  }
+  const db = getDatabase();
+  db.get('SELECT * FROM employees WHERE telegram_id = ?', [telegramId], (err, row) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      db.close();
+      return;
+    }
+    if (!row) {
+      res.json({ registered: false });
+    } else {
+      res.json({ registered: true, employee: row });
+    }
+    db.close();
+  });
+});
+
+app.post('/api/auth/register', (req, res) => {
+  const { initData, name, hourly_rate } = req.body || {};
+  const telegramId = validateTelegramInitData(initData);
+  if (!telegramId) {
+    return res.status(400).json({ error: 'Неверные данные Telegram. Откройте приложение из бота.' });
+  }
+  const rate = parseFloat(hourly_rate);
+  if (!name || String(name).trim() === '' || !Number.isFinite(rate) || rate < 0) {
+    return res.status(400).json({ error: 'Укажите имя и ставку за час (число ≥ 0).' });
+  }
+  const db = getDatabase();
+  db.run(
+    'INSERT INTO employees (telegram_id, name, hourly_rate) VALUES (?, ?, ?)',
+    [telegramId, String(name).trim(), rate],
+    function (err) {
+      if (err) {
+        if (err.message && err.message.includes('UNIQUE')) {
+          return res.status(409).json({ error: 'Вы уже зарегистрированы.' });
+        }
+        res.status(500).json({ error: err.message });
+        db.close();
+        return;
+      }
+      res.json({
+        id: this.lastID,
+        telegram_id: telegramId,
+        name: String(name).trim(),
+        hourly_rate: rate
+      });
+      db.close();
+    }
+  );
 });
 
 // ========== API для сотрудников ==========
