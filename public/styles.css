@@ -1372,7 +1372,8 @@ h3 {
 }
 
 .registration-card input[type="text"],
-.registration-card input[type="number"] {
+.registration-card input[type="number"],
+.registration-card select {
     width: 100%;
     padding: 12px 14px;
     font-size: 1rem;

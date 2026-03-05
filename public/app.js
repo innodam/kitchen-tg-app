@@ -158,10 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadInitialData();
     }
 
-    const salaryEmpSelect = document.getElementById('employee-select');
-    if (salaryEmpSelect) {
-        salaryEmpSelect.addEventListener('change', () => calculateSalary());
-    }
     const salaryMonthInput = document.getElementById('salary-month-input');
     if (salaryMonthInput) {
         salaryMonthInput.addEventListener('change', onSalaryMonthInputChange);
@@ -809,26 +805,6 @@ async function loadEmployees() {
         const response = await fetch(`${API_BASE}/api/employees`);
         const data = await response.json();
         employeesList = Array.isArray(data) ? data : [];
-
-        // Заполняем селект сотрудника для зарплаты только для старшего повара
-        const salarySelect = document.getElementById('employee-select');
-        if (salarySelect) {
-            salarySelect.innerHTML = '';
-            if (currentEmployeeRole === 'senior') {
-                const placeholder = document.createElement('option');
-                placeholder.value = '';
-                placeholder.textContent = 'Выберите сотрудника';
-                salarySelect.appendChild(placeholder);
-                employeesList.forEach(emp => {
-                    const option = document.createElement('option');
-                    option.value = emp.id;
-                    option.textContent = `${emp.name} (${emp.hourly_rate} руб/час)`;
-                    salarySelect.appendChild(option);
-                });
-            }
-        }
-
-        // Для обычного повара currentEmployeeId уже установлен из авторизации
     } catch (error) {
         console.error('Ошибка загрузки сотрудников:', error);
     }
@@ -972,19 +948,10 @@ document.getElementById('schedule-form').addEventListener('submit', async (e) =>
 // Расчет зарплаты
 async function calculateSalary() {
     const resultDiv = document.getElementById('salary-result');
-    let employeeId = null;
-
-    if (currentEmployeeRole === 'senior') {
-        const sel = document.getElementById('employee-select');
-        employeeId = sel ? sel.value : '';
-    } else {
-        employeeId = currentEmployeeId ? String(currentEmployeeId) : '';
-    }
+    const employeeId = currentEmployeeId ? String(currentEmployeeId) : '';
     if (!employeeId) {
         if (resultDiv) {
-            resultDiv.innerHTML = currentEmployeeRole === 'senior'
-                ? '<p>Выберите сотрудника, чтобы увидеть зарплату.</p>'
-                : '<p>Нет данных: не найден сотрудник.</p>';
+            resultDiv.innerHTML = '<p>Нет данных: не найден сотрудник.</p>';
         }
         return;
     }
