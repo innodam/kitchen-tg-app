@@ -58,6 +58,7 @@ function formatTimeShort(timeStr) {
 let employeesList = [];
 let zonesList = [];
 let currentEmployeeId = null;
+let currentEmployeeRole = 'cook'; // 'cook' | 'senior'
 let calendarViewYear = new Date().getFullYear();
 let calendarViewMonth = new Date().getMonth();
 let currentDayModalDate = '';
@@ -180,6 +181,7 @@ async function checkAuthAndMaybeShowRegistration(initData) {
         const data = await res.json();
         if (data.registered && data.employee) {
             currentEmployeeId = data.employee.id;
+            currentEmployeeRole = data.employee.role || 'cook';
             try {
                 localStorage.setItem(STORAGE_CHEF_ID, String(data.employee.id));
             } catch (e) {}
@@ -214,6 +216,8 @@ function initRegistrationForm() {
         }
         const name = document.getElementById('reg-name')?.value?.trim();
         const hourlyRate = document.getElementById('reg-hourly-rate')?.value;
+        const roleEl = document.getElementById('reg-role');
+        const role = roleEl && roleEl.value === 'senior' ? 'senior' : 'cook';
         if (!name) {
             if (errEl) {
                 errEl.textContent = 'Введите имя.';
@@ -231,7 +235,8 @@ function initRegistrationForm() {
                 body: JSON.stringify({
                     initData,
                     name,
-                    hourly_rate: parseFloat(hourlyRate) || 0
+                    hourly_rate: parseFloat(hourlyRate) || 0,
+                    role
                 })
             });
             const data = await res.json();
@@ -239,6 +244,7 @@ function initRegistrationForm() {
                 throw new Error(data.error || 'Ошибка регистрации');
             }
             currentEmployeeId = data.id;
+            currentEmployeeRole = data.role || role || 'cook';
             try {
                 localStorage.setItem(STORAGE_CHEF_ID, String(data.id));
             } catch (e) {}
@@ -307,7 +313,6 @@ function getMonthBounds(year, month) {
 
 async function loadHomePage() {
     const content = document.getElementById('chef-home-content');
-    const chefSelect = document.getElementById('chef-select');
     if (!currentEmployeeId || !employeesList.length) {
         document.getElementById('chef-name').textContent = '—';
         document.getElementById('chef-hourly-rate').textContent = '—';
@@ -804,41 +809,26 @@ async function loadEmployees() {
         const response = await fetch(`${API_BASE}/api/employees`);
         const data = await response.json();
         employeesList = Array.isArray(data) ? data : [];
-        
-        const selects = ['employee-select', 'schedule-employee', 'chef-select'];
-        selects.forEach(selectId => {
-            const select = document.getElementById(selectId);
-            if (!select) return;
-            const isChef = selectId === 'chef-select';
-            select.innerHTML = isChef ? '<option value="">Выберите себя</option>' : '<option value="">Выберите сотрудника</option>';
-            employeesList.forEach(emp => {
-                const option = document.createElement('option');
-                option.value = emp.id;
-                option.textContent = isChef ? emp.name : `${emp.name} (${emp.hourly_rate} руб/час)`;
-                select.appendChild(option);
-            });
-        });
-        
-        if (!currentEmployeeId) {
-            const telegramId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-            if (telegramId) {
-                const found = employeesList.find(e => String(e.telegram_id) === String(telegramId));
-                if (found) currentEmployeeId = found.id;
-            }
-            if (!currentEmployeeId) {
-                try {
-                    const saved = localStorage.getItem(STORAGE_CHEF_ID);
-                    if (saved) currentEmployeeId = parseInt(saved, 10);
-                } catch (e) {}
-            }
-            const chefSelect = document.getElementById('chef-select');
-            if (chefSelect && currentEmployeeId) chefSelect.value = currentEmployeeId;
 
+        // Заполняем селект сотрудника для зарплаты только для старшего повара
         const salarySelect = document.getElementById('employee-select');
-        if (salarySelect && currentEmployeeId) {
-            salarySelect.value = String(currentEmployeeId);
+        if (salarySelect) {
+            salarySelect.innerHTML = '';
+            if (currentEmployeeRole === 'senior') {
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = 'Выберите сотрудника';
+                salarySelect.appendChild(placeholder);
+                employeesList.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = `${emp.name} (${emp.hourly_rate} руб/час)`;
+                    salarySelect.appendChild(option);
+                });
+            }
         }
-        }
+
+        // Для обычного повара currentEmployeeId уже установлен из авторизации
     } catch (error) {
         console.error('Ошибка загрузки сотрудников:', error);
     }
@@ -981,12 +971,20 @@ document.getElementById('schedule-form').addEventListener('submit', async (e) =>
 
 // Расчет зарплаты
 async function calculateSalary() {
-    const employeeId = document.getElementById('employee-select').value;
     const resultDiv = document.getElementById('salary-result');
+    let employeeId = null;
 
+    if (currentEmployeeRole === 'senior') {
+        const sel = document.getElementById('employee-select');
+        employeeId = sel ? sel.value : '';
+    } else {
+        employeeId = currentEmployeeId ? String(currentEmployeeId) : '';
+    }
     if (!employeeId) {
         if (resultDiv) {
-            resultDiv.innerHTML = '<p>Выберите сотрудника, чтобы увидеть зарплату.</p>';
+            resultDiv.innerHTML = currentEmployeeRole === 'senior'
+                ? '<p>Выберите сотрудника, чтобы увидеть зарплату.</p>'
+                : '<p>Нет данных: не найден сотрудник.</p>';
         }
         return;
     }

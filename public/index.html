@@ -16,8 +16,16 @@
             <form id="registration-form">
                 <label for="reg-name">Имя</label>
                 <input type="text" id="reg-name" required placeholder="Как к вам обращаться?" autocomplete="name" />
+
+                <label for="reg-role">Должность</label>
+                <select id="reg-role" required>
+                    <option value="cook" selected>Повар</option>
+                    <option value="senior">Старший повар</option>
+                </select>
+
                 <label for="reg-hourly-rate">Ставка за час (₽)</label>
                 <input type="number" id="reg-hourly-rate" required min="0" step="1" placeholder="0" />
+
                 <button type="submit" class="btn-primary" id="reg-submit">Войти в приложение</button>
             </form>
             <p id="registration-error" class="registration-error" style="display: none;"></p>
@@ -35,12 +43,6 @@
 
         <!-- Вкладка Главная — личная страница повара -->
         <div id="home-tab" class="tab-content active">
-            <div class="chef-select-section">
-                <label>Выберите себя</label>
-                <select id="chef-select" onchange="onChefSelectChange()">
-                    <option value="">—</option>
-                </select>
-            </div>
             <div id="chef-home-content" class="chef-home-content">
                 <section class="chef-info card-glass">
                     <h2 id="chef-name" class="chef-name">—</h2>

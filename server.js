@@ -109,7 +109,7 @@ app.post('/api/auth/me', (req, res) => {
 });
 
 app.post('/api/auth/register', (req, res) => {
-  const { initData, name, hourly_rate } = req.body || {};
+  const { initData, name, hourly_rate, role } = req.body || {};
   const telegramId = validateTelegramInitData(initData);
   if (!telegramId) {
     return res.status(400).json({ error: 'Неверные данные Telegram. Откройте приложение из бота.' });
@@ -118,10 +118,11 @@ app.post('/api/auth/register', (req, res) => {
   if (!name || String(name).trim() === '' || !Number.isFinite(rate) || rate < 0) {
     return res.status(400).json({ error: 'Укажите имя и ставку за час (число ≥ 0).' });
   }
+  const normalizedRole = role === 'senior' ? 'senior' : 'cook';
   const db = getDatabase();
   db.run(
-    'INSERT INTO employees (telegram_id, name, hourly_rate) VALUES (?, ?, ?)',
-    [telegramId, String(name).trim(), rate],
+    'INSERT INTO employees (telegram_id, name, hourly_rate, role) VALUES (?, ?, ?, ?)',
+    [telegramId, String(name).trim(), rate, normalizedRole],
     function (err) {
       if (err) {
         if (err.message && err.message.includes('UNIQUE')) {
@@ -135,7 +136,8 @@ app.post('/api/auth/register', (req, res) => {
         id: this.lastID,
         telegram_id: telegramId,
         name: String(name).trim(),
-        hourly_rate: rate
+        hourly_rate: rate,
+        role: normalizedRole
       });
       db.close();
     }
@@ -156,18 +158,19 @@ app.get('/api/employees', (req, res) => {
 });
 
 app.post('/api/employees', (req, res) => {
-  const { telegram_id, name, hourly_rate } = req.body;
+  const { telegram_id, name, hourly_rate, role } = req.body;
   const db = getDatabase();
   
+  const normalizedRole = role === 'senior' ? 'senior' : 'cook';
   db.run(
-    'INSERT INTO employees (telegram_id, name, hourly_rate) VALUES (?, ?, ?)',
-    [telegram_id, name, hourly_rate],
+    'INSERT INTO employees (telegram_id, name, hourly_rate, role) VALUES (?, ?, ?, ?)',
+    [telegram_id, name, hourly_rate, normalizedRole],
     function(err) {
       if (err) {
         res.status(500).json({ error: err.message });
         return;
       }
-      res.json({ id: this.lastID, telegram_id, name, hourly_rate });
+      res.json({ id: this.lastID, telegram_id, name, hourly_rate, role: normalizedRole });
       db.close();
     }
   );

@@ -23,14 +23,22 @@ function initDatabase() {
 
     // Создание таблиц
     db.serialize(() => {
-      // Таблица сотрудников
+      // Таблица сотрудников (+ роль доступа)
       db.run(`CREATE TABLE IF NOT EXISTS employees (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         telegram_id TEXT UNIQUE NOT NULL,
         name TEXT NOT NULL,
         hourly_rate REAL NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        role TEXT NOT NULL DEFAULT 'cook'
       )`);
+
+      // Миграция для старых баз без колонки role
+      db.run(`ALTER TABLE employees ADD COLUMN role TEXT NOT NULL DEFAULT 'cook'`, (alterErr) => {
+        if (alterErr && !String(alterErr.message || '').includes('duplicate column name')) {
+          console.error('Ошибка миграции employees.role:', alterErr);
+        }
+      });
 
       // Таблица зон кухни
       db.run(`CREATE TABLE IF NOT EXISTS kitchen_zones (
